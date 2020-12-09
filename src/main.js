@@ -7,6 +7,7 @@ import VueKeyCloak from '@dsb-norge/vue-keycloak-js'
 import VueResource from 'vue-resource'
 import Vuelidate from 'vuelidate'
 import store from './store.js'
+import CONST from './const.js'
 
 Vue.prototype.$eventBus = new Vue()
 
@@ -20,13 +21,7 @@ Vue.use(Vuetify, { //material icons
 Vue.use(Vuelidate)
 
 Vue.use(VueKeyCloak, {
-  config: {
-    authRealm: "euxdat",
-    authUrl: "https://test.euxdat.eu/auth",
-    authClientId: "frontend",
-    logoutRedirectUri: "https://test.euxdat.eu",
-  },
-
+  config: CONST.keyCloakConf,
   onReady: () => {
     new Vue({
       el: '#app',
