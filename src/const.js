@@ -3,6 +3,7 @@ var euxdatURL = 'https://sc5-backend.'.concat(domain,'/backend/');
 var cloudifyURL = 'http://cloudify-api.'.concat(domain, '/api/v3.1/');
 var mundiURL  = 'http://mundi-api.'.concat(domain, '/mundiapi');
 var authHeader = 'Basic YWRtaW46RXV4ZGF0MTIzNDUh';
+var dbHost = 'https://geodb-devel.'+domain+'/xalkidiki/';
 
 var keyCloakConf = {
   authRealm: "euxdat",
@@ -16,7 +17,8 @@ const CONST = {
   euxdatURL: euxdatURL,
   cloudifyURL: cloudifyURL,
   mundiURL: mundiURL,
-  authHeader: authHeader
+  authHeader: authHeader,
+  dbHost: dbHost,  
 };
 
 export default CONST

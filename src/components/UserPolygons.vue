@@ -2,7 +2,7 @@
     <div>
         <v-layout row wrap class="ml-2">
 
-            <v-flex sm6 xs12 md8 >
+            <v-flex sm6 xs12 md6 >
                 <v-combobox
                     v-model="selectedPolygon"
                     :items="userPolygons.features"
@@ -15,9 +15,9 @@
                 ></v-combobox>
             </v-flex>
 
-            <v-flex sm6 xs12 md4 class="pt-3">
+            <v-flex sm6 xs12 md6 class="pt-3">
                 <v-layout row wrap>
-                    <v-btn flat icon color="green" v-if="isSelected" :disabled="isDrawing || isOutput"
+                    <v-btn flat icon color="green" v-if="isSelected" :disabled="isDrawing"
                         style="margin: 6px 2px; width: 25px;" @click="zoomToPolygon(selectedPolygon.properties.pk)" title="Zoom to polygon">
                         <v-icon>zoom_in</v-icon>
                     </v-btn>
@@ -120,11 +120,12 @@
 import GeoJSON from 'ol/format/GeoJSON';
 import {Draw} from 'ol/interaction.js';
 import {Fill, Stroke, Style} from 'ol/style.js';
-
+import CONST from "../const";
 export default {
     name: "UserPolygons",
     props: {},
     data: () => ({
+        dbHost: CONST.dbHost,
         userPolygons: [],
         polygonBBOX: [],
         // interactionSelect: null,
@@ -164,7 +165,7 @@ export default {
         */
         getUserLayers(){  
  
-            var url = 'https://geodb-devel.test.euxdat.eu/xalkidiki/'.concat(this.$store.state.user.preferred_username,
+            var url = this.dbHost.concat(this.$store.state.user.preferred_username,
                 '/fields/epsg/4326/geojson');
 
             this.$http.get(url).then(response => {
@@ -259,39 +260,39 @@ export default {
         */
         savePolygon(){
 
-        var self = this;
-        var url = 'https://geodb-devel.test.euxdat.eu/xalkidiki/'.concat(this.$store.state.user.preferred_username,
-            '/fields/add');
+            var self = this;
+            var url = this.dbHost.concat(this.$store.state.user.preferred_username,
+                '/fields/add');
 
-        var geoJSON =
-            {
-            'type': 'FeatureCollection',
-            'crs': {
-            'type': 'name',
-            'properties': {
-                'name': 'EPSG:4326'
-            }
-            },
-            'features': [{
-            'type': 'Feature',
-            'properties': {"culture": self.newPolygonName, "olu_id": 24},
-            'geometry': {
-                'type': 'Polygon',
-                'coordinates': this.newPolygon.getGeometry().getCoordinates()
+            var geoJSON =
+                {
+                    'type': 'FeatureCollection',
+                    'crs': {
+                    'type': 'name',
+                    'properties': {
+                        'name': 'EPSG:4326'
+                    }
+                    },
+                    'features': [{
+                    'type': 'Feature',
+                    'properties': {"culture": self.newPolygonName, "olu_id": 24},
+                        'geometry': {
+                            'type': 'Polygon',
+                            'coordinates': this.newPolygon.getGeometry().getCoordinates()
+                        }
+                    }]
                 }
-            }]
-            }
 
-        if(this.$refs.formNew.validate()){
-            this.$http.post(url, geoJSON).then(response => {
-                self.getUserLayers(false);
-                self.dialogAddPolygon = false;                
-                self.newPolygonName = "New polygon";
-                this.$eventBus.$emit('show-alert', "success", response.statusText);
-            }, response => {
-                this.$eventBus.$emit('show-alert', "error", response.statusText);
-            });
-        }
+            if(this.$refs.formNew.validate()){
+                this.$http.post(url, geoJSON).then(response => {
+                    self.getUserLayers(false);
+                    self.dialogAddPolygon = false;                
+                    self.newPolygonName = "New polygon";
+                    this.$eventBus.$emit('show-alert', "success", response.statusText);
+                }, response => {
+                    this.$eventBus.$emit('show-alert', "error", response.statusText);
+                });
+            }
 
         },//savePolygon
         /**
@@ -303,7 +304,7 @@ export default {
             var self = this;
             var pk = this.selectedPolygon.properties.pk;
             var lyr = this.getLayerFromMapByName('userPolygonsLayer');
-            var url = 'https://geodb-devel.test.euxdat.eu/xalkidiki/'.concat(this.$store.state.user.preferred_username,
+            var url = this.dbHost.concat(this.$store.state.user.preferred_username,
                 '/fields/', pk, '/delete');
 
             this.$http.get(url).then(response => {
@@ -334,9 +335,13 @@ export default {
        this.initComponent();
     },
     created(){
-        this.$eventBus.$on('remove-outputRaster', (lyrName)  => {
-             this.$store.state.map.removeLayer(this.getLayerFromMapByName(lyrName));     
+        this.$eventBus.$on('remove-outputLayer', (lyrName)  => {
+            this.$store.state.map.removeLayer(this.getLayerFromMapByName(lyrName));     
         });
+        this.$eventBus.$on('disable-addBtn', (bool)  => {
+            this.isOutput = bool
+        });
+        
     }
 };
 </script>

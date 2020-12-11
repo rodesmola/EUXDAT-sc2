@@ -59,7 +59,7 @@
             <div style="background-color: white; padding-left: 10px; padding-right: 10px;">
 
               <div style="margin-top: 10px; margin-bottom: 5px; text-size: 10px;" lazy-validation>
-                <v-layout row wrap style="text-align: left; padding-top: 8px; padding-bottom: 8px;">
+                <v-layout row wrap style="text-align: left; padding-top: 8px; padding-bottom: 8px; overflow:auto; max-height: 70vh;">
                   <CropMonitoring/>
                 </v-layout>
               </div>
@@ -142,26 +142,6 @@ export default {
   }),
   methods: {
     /**
-    * Re-render the entire component, takes index of the accordion
-    *
-    * @param {number} i
-    * @public
-    */
-    updateComponent(i){
-      if(i === 0){
-          this.componetPCkey ++
-          this.$eventBus.$emit('updateComponetPC', this.componetPCkey);
-          this.isPointer = false;
-      }else if (i === 1){
-          this.componetMZkey ++
-          this.$eventBus.$emit('updateComponetMZ', this.componetMZkey);
-          this.isPointer = false;
-      } else {
-        this.componetCPkey ++
-        this.isPointer = true;
-      }
-    },
-    /**
     * Initialize Map, base layer, styles and select interaction
     *
     * @public
@@ -213,7 +193,7 @@ export default {
         ],
         view: new View({
           projection: 'EPSG:4326',
-          center: [12.14, 48.51],
+          center: [23.307495, 40.488737],
           zoom: 11,
           minZoom: 8,
         })
@@ -305,12 +285,6 @@ export default {
     this.$eventBus.$on('show-alert', (type, msg)  => {
       this.showAlert(type, msg);
     });
-
-    this.$eventBus.$on('show-outputPanel', (bool, dates)  => {
-      this.outputPanel = bool;
-      this.outputDates = dates;
-    });
-
 },
   filters: {
     truncate: function(value) {
