@@ -302,7 +302,7 @@ export default {
 
           var layer = new TileLayer({
             source: new TileWMS({
-              url: 'http://shservices.mundiwebservices.com/ogc/wcs/d275ef59-3f26-4466-9a60-ff837e572144/',
+              url: 'https://shservices.mundiwebservices.com/ogc/wcs/d275ef59-3f26-4466-9a60-ff837e572144/',
               params: {'SERVICE': 'WCS',
                 'REQUEST': 'GetCoverage',
                 'BBOX': selectedPolygonBBOX[1].toString().concat(',', selectedPolygonBBOX[0].toString(),
