@@ -151,12 +151,28 @@
                   
                 <v-layout row wrap >
                   <v-flex xs12 class="pl-3 pr-3 mb-2" style="text-align: center;">
-                    <span class="title" style="color: #37aa48; font-size 12px;">
+                    <span class="title" style="color: #37aa48;">
                       <span style="color:#293f47"> Result: </span> {{resultMsg}}
                     </span>                    
                   </v-flex>
                   <v-flex xs12 >
                     <v-divider></v-divider>  
+                  </v-flex>
+                  <v-flex xs12 class="pl-3 pr-3 mt-2 mb-2">
+                      <span class="title" style="color: #37aa48; font-size: 12px;">
+                        <span style="color:#293f47"> Mean values: </span>
+                      </span>  
+                  </v-flex>                  
+                  <v-flex xs4 class="pl-3 pr-3 mt-2 mb-2" v-for="(i, index) in meanValuesArr" v-bind:key="index" style="font-size: 12px;">
+                    {{i}}
+                  </v-flex>
+                  <v-flex xs12 >
+                    <v-divider></v-divider>  
+                  </v-flex>
+                  <v-flex xs12 class="pl-3 pr-3 mt-3 mb-1">
+                    <span class="title" style="color: #37aa48; font-size: 12px;">
+                      <span style="color:#293f47"> Files for download: </span>
+                    </span>   
                   </v-flex>
                   <v-flex xs6 class="pl-3 pr-3">
                     <v-list>
@@ -260,7 +276,8 @@ export default {
       ],
       menuStartDate: false,
       menuEndDate: false,
-      resultMsg: ""        
+      resultMsg: "",
+      meanValuesArr: []    
     }),
     methods: {
       getPolygonName(){
@@ -442,18 +459,22 @@ export default {
         this.$http.get(url, {headers}).then(response => {
 
           var i = 0
-
           Object.keys(response.body).forEach(function(k){
-            if(k != "result" && k != "message" && i <= 16){
+            if(k != "result" && k != "message" && k != "mean_values" && i <= 19){
               k = k.toString().slice(0,k.toString().lastIndexOf('_'));            
               self.outputData.push(k)
             }
-            if(k != "result" && k != "message" && i >16){
+            if(k != "result" && k != "message" && k != "mean_values" && i >19){
               k = k.toString().slice(0,k.toString().lastIndexOf('_'));            
               self.outputData2.push(k)
             }
-            i++
+            i++            
           })
+
+          var entries = Object.entries(response.body.mean_values)
+          for (const [key, value] of entries) {             
+            self.meanValuesArr.push(key.concat(": ", value))
+          }
           this.resultMsg = response.body.message;          
           this.isLoading = false;
           this.$eventBus.$emit('show-alert', "success", response.statusText);

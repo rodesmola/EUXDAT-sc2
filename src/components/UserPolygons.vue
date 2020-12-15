@@ -2,7 +2,7 @@
     <div>
         <v-layout row wrap class="ml-2">
 
-            <v-flex sm6 xs12 md6 >
+            <v-flex sm6 xs12 md8 >
                 <v-combobox
                     v-model="selectedPolygon"
                     :items="userPolygons.features"
@@ -15,7 +15,7 @@
                 ></v-combobox>
             </v-flex>
 
-            <v-flex sm6 xs12 md6 class="pt-3">
+            <v-flex sm6 xs12 md4 class="pt-3">
                 <v-layout row wrap>
                     <v-btn flat icon color="green" v-if="isSelected" :disabled="isDrawing"
                         style="margin: 6px 2px; width: 25px;" @click="zoomToPolygon(selectedPolygon.properties.pk)" title="Zoom to polygon">
@@ -132,7 +132,12 @@ export default {
         isDrawing: false,
         outputGeojson: {},
         isOutput: false,
-        selectedPolygon: "",
+        selectedPolygon: {
+            properties:{
+                culture: "",
+                pk: ""
+            }   
+        },
         isSelected: false,
         newPolygon: {},
         newPolygonName: "New polygon",
@@ -204,26 +209,27 @@ export default {
         */
         zoomToPolygon(pk){
 
-            var self = this;
-            var feature;
-            var layer = this.getLayerFromMapByName('userPolygonsLayer');
-            this.isSelected = true;
+            if(pk){
+                var self = this;
+                var feature;
+                var layer = this.getLayerFromMapByName('userPolygonsLayer');
+                this.isSelected = true;
 
-            layer.getSource().getFeatures().forEach(function(fea){                
-                if(fea.getProperties().pk === pk){
-                    self.$store.state.map.getView().fit(fea.getGeometry());                                        
-                    feature = fea;
-                }else{
-                fea.setStyle(self.defaultStyle);
-                }
-            });
+                layer.getSource().getFeatures().forEach(function(fea){                
+                    if(fea.getProperties().pk === pk){
+                        self.$store.state.map.getView().fit(fea.getGeometry());                                        
+                        feature = fea;
+                    }else{
+                    fea.setStyle(self.defaultStyle);
+                    }
+                });
 
-            feature.setStyle(this.selectedStyle)
-            this.polygonBBOX = feature.getGeometry().getExtent();
+                feature.setStyle(this.selectedStyle)
+                this.polygonBBOX = feature.getGeometry().getExtent();
 
-            this.$store.state.selectedPolygon = feature;
-            this.$eventBus.$emit('is-selected', true);    
-
+                this.$store.state.selectedPolygon = feature;
+                this.$eventBus.$emit('is-selected', true);    
+            }
         },//zoomToPolygon
 
         /**
@@ -319,7 +325,12 @@ export default {
 
                 self.dialogDeletePolygon = false;
                 self.getUserLayers(false);
-                self.selectedPolygon = "";                
+                self.selectedPolygon = {
+                    properties:{
+                        culture: "",
+                        pk: ""
+                    }
+                }
                 self.isSelected = false;
                 this.$eventBus.$emit('is-selected', false);
 
