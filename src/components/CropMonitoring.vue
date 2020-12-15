@@ -150,6 +150,14 @@
                 <v-card-text>
                   
                 <v-layout row wrap >
+                  <v-flex xs12 class="pl-3 pr-3 mb-2" style="text-align: center;">
+                    <span class="title" style="color: #37aa48; font-size 12px;">
+                      <span style="color:#293f47"> Result: </span> {{resultMsg}}
+                    </span>                    
+                  </v-flex>
+                  <v-flex xs12 >
+                    <v-divider></v-divider>  
+                  </v-flex>
                   <v-flex xs6 class="pl-3 pr-3">
                     <v-list>
               
@@ -167,7 +175,7 @@
                           <v-icon color="#4ea852">get_app</v-icon>
                         </v-list-tile-action>
                       </v-list-tile>
-                            <v-divider></v-divider>  
+                        <v-divider></v-divider>  
                       </div>
 
                     </v-list>
@@ -189,7 +197,7 @@
                           <v-icon color="#4ea852">get_app</v-icon>
                         </v-list-tile-action>
                       </v-list-tile>
-                            <v-divider></v-divider>  
+                        <v-divider></v-divider>  
                       </div>
 
                     </v-list>
@@ -251,7 +259,8 @@ export default {
         v => !!v || ''
       ],
       menuStartDate: false,
-      menuEndDate: false,        
+      menuEndDate: false,
+      resultMsg: ""        
     }),
     methods: {
       getPolygonName(){
@@ -445,7 +454,7 @@ export default {
             }
             i++
           })
-          
+          this.resultMsg = response.body.message;          
           this.isLoading = false;
           this.$eventBus.$emit('show-alert', "success", response.statusText);
         }, response => {
